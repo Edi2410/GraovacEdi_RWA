@@ -15,6 +15,8 @@ namespace Javni.Mappers
             CreateMap<RegisterUser, DAL.Models.User>();
             CreateMap<DAL.Models.User, LoginUser>();
             CreateMap<DAL.Models.User, RegisterUser>();
+            CreateMap<DAL.Models.User, JavniUser>();
+            CreateMap<JavniUser, DAL.Models.User>();
 
         }
        

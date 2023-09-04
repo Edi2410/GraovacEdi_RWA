@@ -67,7 +67,7 @@ namespace Javni.Controllers
         {
             string username = Request.Cookies["username"];
             var user = _context.Users.Include(v => v.CountryOfResidence).FirstOrDefault(u => u.Username == username);
-            var BLUser = _mapper.Map<IEnumerable<User>>(user);
+            var BLUser = _mapper.Map<JavniUser>(user);
             return View(BLUser);
         }
 

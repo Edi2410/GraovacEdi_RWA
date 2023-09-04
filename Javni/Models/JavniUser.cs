@@ -1,6 +1,9 @@
-﻿namespace Javni.Models
+﻿using DAL.Models;
+using System.ComponentModel.DataAnnotations;
+
+namespace Javni.Models
 {
-    public class User
+    public class JavniUser
     {
         public int Id { get; set; }
 

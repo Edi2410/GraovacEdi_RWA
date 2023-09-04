@@ -25,9 +25,9 @@ public partial class User
     [EmailAddress]
     public string Email { get; set; } = null!;
 
-    public string PwdHash { get; set; } = null!;
+    public string? PwdHash { get; set; } = null!;
 
-    public string PwdSalt { get; set; } = null!;
+    public string? PwdSalt { get; set; } = null!;
 
     public string? Phone { get; set; }
 
