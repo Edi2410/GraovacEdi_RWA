@@ -5,24 +5,50 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Administrator.Models;
+using Administrator.ViewModels;
+using DAL.Models;
+using X.PagedList;
+using AutoMapper;
 
 namespace Administrator.Controllers
 {
     public class VideosController : Controller
     {
         private readonly RwaMoviesContext _context;
+        private readonly IMapper _mapper;
 
-        public VideosController(RwaMoviesContext context)
+        public VideosController(RwaMoviesContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: Videos
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page, string? searchText)
         {
-            var rwaMoviesContext = _context.Videos.Include(v => v.Genre).Include(v => v.Image);
-            return View(await rwaMoviesContext.ToListAsync());
+            int pageSize = 4;
+            int pageNumber = page ?? 1;
+            List<Video> rwaMoviesContextPaged = null;
+            if (searchText != null) {
+                rwaMoviesContextPaged =
+                    await _context.Videos
+                    .Include(v => v.Genre)
+                    .Include(v => v.Image)
+                    .Where(v => v.Name.Contains(searchText) || v.Genre.Name.Contains(searchText))
+                    .OrderBy(v => v.CreatedAt)
+                    .ToListAsync();
+
+                ViewData["searchText"] = searchText;
+                return View(rwaMoviesContextPaged.ToPagedList(pageNumber, pageSize));
+            }
+                rwaMoviesContextPaged =
+                    await _context.Videos
+                    .Include(v => v.Genre)
+                    .Include(v => v.Image)
+                    .OrderBy(v => v.CreatedAt)
+                    .ToListAsync();
+
+            return View(rwaMoviesContextPaged.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: Videos/Details/5
@@ -44,8 +70,8 @@ namespace Administrator.Controllers
         // GET: Videos/Create
         public IActionResult Create()
         {
-            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Id");
-            ViewData["ImageId"] = new SelectList(_context.Images, "Id", "Id");
+            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Name");
+            ViewData["ImageId"] = new SelectList(_context.Images, "Id", "Content");
             return View();
         }
 
@@ -54,16 +80,17 @@ namespace Administrator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(VideoRequest video)
+        public async Task<IActionResult> Create(VMVideo video)
         {
+            var DALvideo = _mapper.Map<Video>(video);
             if (ModelState.IsValid)
             {
-                _context.Add(video);
+                _context.Add(DALvideo);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Id", video.GenreId);
-            ViewData["ImageId"] = new SelectList(_context.Images, "Id", "Id", video.ImageId);
+            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Id", DALvideo.GenreId);
+            ViewData["ImageId"] = new SelectList(_context.Images, "Id", "Id", DALvideo.ImageId);
             return View(video);
         }
 
@@ -75,8 +102,8 @@ namespace Administrator.Controllers
             {
                 return NotFound();
             }
-            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Id", video.GenreId);
-            ViewData["ImageId"] = new SelectList(_context.Images, "Id", "Id", video.ImageId);
+            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Name", video.GenreId);
+            ViewData["ImageId"] = new SelectList(_context.Images, "Id", "Content", video.ImageId);
             return View(video);
         }
 
@@ -85,9 +112,10 @@ namespace Administrator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id, VideoRequest video)
+        public async Task<IActionResult> Edit(int? id, VMVideo video)
         {
-            if (id != video.Id)
+            var DALvideo = _mapper.Map<Video>(video);
+            if (id != DALvideo.Id)
             {
                 return NotFound();
             }
@@ -96,12 +124,12 @@ namespace Administrator.Controllers
             {
                 try
                 {
-                    _context.Update(video);
+                    _context.Update(DALvideo);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!VideoExists(video.Id))
+                    if (!VideoExists(DALvideo.Id))
                     {
                         return NotFound();
                     }
@@ -112,9 +140,9 @@ namespace Administrator.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Id", video.GenreId);
-            ViewData["ImageId"] = new SelectList(_context.Images, "Id", "Id", video.ImageId);
-            return View(video);
+            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Id", DALvideo.GenreId);
+            ViewData["ImageId"] = new SelectList(_context.Images, "Id", "Id", DALvideo.ImageId);
+            return View(DALvideo);
         }
 
         // GET: Videos/Delete/5

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoreWebApi.Models;
+using DAL.Models;
 
 namespace CoreWebApi.Controlers
 {

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CoreWebApi.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using DAL.Models;
 
 namespace CoreWebApi.Controlers
 {

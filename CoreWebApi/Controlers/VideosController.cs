@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CoreWebApi.Models;
+using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

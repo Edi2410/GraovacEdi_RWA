@@ -1,4 +1,5 @@
 using Administrator.Models;
+using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,10 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddControllersWithViews();
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddDbContext<RwaMoviesContext>(options =>
 {
-    options.UseSqlServer("name=ConnectionStrings:RwaMoviesConnStr");
+    options.UseSqlServer("name=ConnectionStrings:DefaultConnectionString");
 });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -21,6 +24,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -29,6 +33,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Videos}/{action=Index}/{id?}");
 
 app.Run();

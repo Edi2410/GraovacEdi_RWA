@@ -1,0 +1,1 @@
+C:\Users\egraedi\.dotnet\tools\dotnet-ef.exe dbcontext scaffold "server=HR-00006477\SQLEXPRESS;Database=Task10;User=sas;Password=SQL;TrustServerCertificate=True;MultipleActiveResultSets=true" Microsoft.EntityFrameworkCore.SqlServer -o Models

@@ -1,35 +1,73 @@
-﻿@model Administrator.ViewModels.VideosVM
+﻿@model X.PagedList.IPagedList<DAL.Models.Video>
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    ViewData["Title"] = "Videos";
+
+    ViewData["Title"] = "Index";
+    string searchText = ViewData["searchText"] as string;
+    var MoviesItems = Model;
 }
+<a asp-action="Create" class="btn btn-primary">Create</a>
+<br />
+<form method="get">
+    <a>Unesi naziv filma ili žanr</a>
+    <input id="searchValue" type="search" name="searchText" placeholder="Search..." value="@searchText" />
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
 
-<h1>Videos</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<br />
 
 <div class="row">
-    @foreach (var item in Model.Videos)
+    @foreach (var item in MoviesItems)
     {
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card mb-3">
-                <img src="@item.ImageId" class="card-img-top" alt="@item.Name">
+                <a href="@item.StreamingUrl" target="_blank">
+                    <img src="@(item.Image?.Content)" class="card-img-top fixed-image">
+                </a>
                 <div class="card-body">
-                    <h5 class="card-title">@item.Name</h5>
-                    <p class="card-text">@item.Description</p>
-                    <p class="card-text"><strong>Duration:</strong> @item.TotalSeconds seconds</p>
-                    <p class="card-text"><strong>Genre:</strong> @item.Genre.Name</p>
-                    <a href="@item.StreamingUrl" class="btn btn-primary">Watch</a>
+                    <h5 class="card-title">@(item.Name)</h5>
+                    <p class="card-text">@(item.Description)</p>
+                    <p class="card-text">@(item.Genre?.Name)</p>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Details</a>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a>
                     <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-                </div>
-                <div class="card-footer text-muted">
-                    Created at: @item.CreatedAt.ToString("dd/MM/yyyy")
                 </div>
             </div>
         </div>
     }
 </div>
+
+<div class="row">
+    <div class="col-md-12">
+        Page size seted on 4 (hardcodet)
+        <br/>
+        Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index" asp-controller="Videos" asp-route-searchText="@ViewData["searchText"]" asp-route-page="@(Model.PageNumber - 1)" asp-route-pageSize="@(Model.PageSize)">Previous</a>
+                </li>
+                @for (int i = 1; i <= Model.PageCount; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-controller="Videos" asp-route-searchText="@ViewData["searchText"]" asp-route-page="@(i)" asp-route-pageSize="@(Model.PageSize)">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index" asp-controller="Videos" asp-route-searchText="@ViewData["searchText"]" asp-route-page="@(Model.PageNumber + 1)" asp-route-pageSize="@(Model.PageSize)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<style>
+    .fixed-image {
+        width: 100%;
+        height: auto;
+        max-width: 600px;
+        max-height: 350px;
+    }
+</style>

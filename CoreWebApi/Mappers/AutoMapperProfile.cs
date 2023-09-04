@@ -1,6 +1,6 @@
 ﻿using CoreWebApi.Models;
 using AutoMapper;
-
+using DAL.Models;
 
 namespace CoreWebApi.Mappers
 {
