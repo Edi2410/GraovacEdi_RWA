@@ -49,8 +49,8 @@
                             alert(data.message);
                         }
                     },
-                    error: function () {
-                        alert('An error occurred while deleting the genre.');
+                    error: function (error) {
+                        alert(error.message);
                     }
                 });
             }

@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<RwaMoviesContext>(options =>
 {
     options.UseSqlServer("name=ConnectionStrings:DefaultConnectionString");

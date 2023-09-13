@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoreWebApi.Models;
 using DAL.Models;
+using AutoMapper;
+using CoreWebApi.DTOs;
+using Humanizer.Localisation;
 
 namespace CoreWebApi.Controlers
 {
@@ -14,27 +17,30 @@ namespace CoreWebApi.Controlers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly RwaMoviesContext _context;
+        private readonly RwaMoviesContext _context; 
+        private readonly IMapper _mapper;
 
-        public UsersController(RwaMoviesContext context)
+        public UsersController(RwaMoviesContext context, IMapper mapper)
         {
-            _context = context;
+            _context = context; 
+            _mapper = mapper;
         }
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
         {
           if (_context.Users == null)
           {
               return NotFound();
           }
-            return await _context.Users.ToListAsync();
+            
+            return _mapper.Map<List<UserDTO>>(await _context.Users.ToListAsync());
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<UserDTO>> GetUser(int id)
         {
           if (_context.Users == null)
           {
@@ -47,14 +53,17 @@ namespace CoreWebApi.Controlers
                 return NotFound();
             }
 
-            return user;
+            return _mapper.Map<UserDTO>(user);
         }
 
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(int id, UserDTO userDTO)
         {
+
+            var user = _mapper.Map<User>(userDTO);
+
             if (id != user.Id)
             {
                 return BadRequest();
@@ -84,9 +93,10 @@ namespace CoreWebApi.Controlers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<User>> PostUser(UserDTO userDTO)
         {
-          if (_context.Users == null)
+            var user = _mapper.Map<User>(userDTO);
+            if (_context.Users == null)
           {
               return Problem("Entity set 'RwaMoviesContext.Users'  is null.");
           }

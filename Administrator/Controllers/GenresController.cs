@@ -149,6 +149,14 @@ namespace Administrator.Controllers
             {
                 return Problem("Entity set 'RwaMoviesContext.Genres'  is null.");
             }
+
+    
+            var hasDependentVideos = await _context.Videos.AnyAsync(v => v.GenreId == id);
+            if (hasDependentVideos)
+            {
+                return BadRequest("Cannot delete this genre because it is referenced by videos.");
+            }
+
             var genre = await _context.Genres.FindAsync(id);
             if (genre != null)
             {

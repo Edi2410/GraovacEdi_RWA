@@ -1,9 +1,9 @@
 ﻿using DAL.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace Javni.Models
+namespace CoreWebApi.DTOs
 {
-    public class JavniUser
+    public class UserDTO
     {
         public int Id { get; set; }
 
@@ -33,6 +33,5 @@ namespace Javni.Models
         [Required(ErrorMessage = "CountryOfResidenceId is required")]
         public int CountryOfResidenceId { get; set; }
 
-        public virtual Country CountryOfResidence { get; set; } = null!;
     }
 }

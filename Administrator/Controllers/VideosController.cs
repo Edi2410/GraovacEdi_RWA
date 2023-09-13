@@ -26,8 +26,10 @@ namespace Administrator.Controllers
         // GET: Videos
         public async Task<IActionResult> Index(int? page, string? searchText)
         {
+         
             int pageSize = 4;
             int pageNumber = page ?? 1;
+            ViewData["pages"] = pageNumber;
             List<Video> rwaMoviesContextPaged = null;
             if (searchText != null) {
                 rwaMoviesContextPaged =
@@ -38,7 +40,12 @@ namespace Administrator.Controllers
                     .OrderBy(v => v.CreatedAt)
                     .ToListAsync();
 
-                ViewData["searchText"] = searchText;
+                ViewData["pages"] = rwaMoviesContextPaged.Count() / pageSize;
+                CookieOptions options = new CookieOptions();
+                options.Expires = DateTime.Now.AddDays(7);
+                Response.Cookies.Append("SearchText", searchText, options);
+                ViewData["page"] = page;
+                
                 return View(rwaMoviesContextPaged.ToPagedList(pageNumber, pageSize));
             }
                 rwaMoviesContextPaged =
@@ -48,6 +55,9 @@ namespace Administrator.Controllers
                     .OrderBy(v => v.CreatedAt)
                     .ToListAsync();
 
+            Response.Cookies.Delete("SearchText");
+            ViewData["pages"] = rwaMoviesContextPaged.Count() / pageSize;
+            ViewData["page"] = page;
             return View(rwaMoviesContextPaged.ToPagedList(pageNumber, pageSize));
         }
 

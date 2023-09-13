@@ -27,17 +27,21 @@ namespace CoreWebApi.Controlers
             {
                 return NotFound();
             }
-            return _mapper.Map<List<VideoDTO>>(await _context.Videos.ToListAsync());
+            var videos = await _context.Videos
+                        .Include(v => v.Genre)
+                        .ToListAsync();
+                        //.Include(v => v.VideoTags).ThenInclude(vt => vt.Tag)
+            return _mapper.Map<List<VideoDTO>>(videos);
         }
 
         // GET: api/Videos/5
         [HttpGet("{id}")]
         public async Task<ActionResult<VideoDTO>> GetVideo(int id)
         {
-          if (_context.Videos == null)
-          {
-              return NotFound();
-          }
+            if (_context.Videos == null)
+            {
+                return NotFound();
+            }
             var video = await _context.Videos.FindAsync(id);
 
             if (video == null)
@@ -49,7 +53,7 @@ namespace CoreWebApi.Controlers
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult<IEnumerable<VideoDTO>>> Search(int page, int size, string orderBy, string direction,string filter)
+        public async Task<ActionResult<IEnumerable<VideoDTO>>> Search(int page, int size, string? orderBy, string? direction, string? filter)
         {
             var videos = await _context.Videos.ToListAsync();
             IEnumerable<Video> ordered;
@@ -86,7 +90,7 @@ namespace CoreWebApi.Controlers
 
 
             // Now we can page the correctly ordered items
-            var retVal = ordered.Skip(page * size).Take(size);
+            var retVal = ordered.Skip((page - 1) * size).Take(size);
 
 
             return Ok(_mapper.Map<List<VideoDTO>>(retVal));
@@ -129,11 +133,11 @@ namespace CoreWebApi.Controlers
         [HttpPost]
         public async Task<ActionResult<VideoDTO>> PostVideo(VideoDTO video)
         {
-          if (_context.Videos == null)
-          {
-              return Problem("Entity set 'RwaMoviesContext.Videos'  is null.");
-          }
-            
+            if (_context.Videos == null)
+            {
+                return Problem("Entity set 'RwaMoviesContext.Videos'  is null.");
+            }
+
             _context.Videos.Add(_mapper.Map<Video>(video));
             await _context.SaveChangesAsync();
 

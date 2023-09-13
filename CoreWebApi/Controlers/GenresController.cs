@@ -111,10 +111,18 @@ namespace CoreWebApi.Controlers
             {
                 return NotFound();
             }
+
             var genre = await _context.Genres.FindAsync(id);
             if (genre == null)
             {
                 return NotFound();
+            }
+
+            // Check if there are dependent records in the Video table
+            var hasDependentVideos = await _context.Videos.AnyAsync(v => v.GenreId == id);
+            if (hasDependentVideos)
+            {
+                return BadRequest("Cannot delete this genre because it is referenced by videos.");
             }
 
             _context.Genres.Remove(genre);
