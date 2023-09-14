@@ -1,5 +1,6 @@
 using CoreWebApi.Models;
 using DAL.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<RwaMoviesContext>(options =>
 {
     options.UseSqlServer("name=ConnectionStrings:RwaMoviesConnStr");
+});
+builder.Services.Configure<ApiBehaviorOptions>(options => {
+    options.SuppressModelStateInvalidFilter = true;
 });
 var app = builder.Build();
 

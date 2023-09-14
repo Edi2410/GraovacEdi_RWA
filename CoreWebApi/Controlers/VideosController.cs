@@ -57,11 +57,17 @@ namespace CoreWebApi.Controlers
         {
             var videos = await _context.Videos.ToListAsync();
             IEnumerable<Video> ordered;
+            IEnumerable<Video> filteredVideos;
 
-
-            var filteredVideos =
-                videos.Where(x =>
+            if (filter != null)
+            {
+                filteredVideos = videos.Where(x =>
                     x.Name.Contains(filter, StringComparison.InvariantCultureIgnoreCase));
+            }
+            else
+            {
+                filteredVideos = videos;
+            }
 
             // Ordering
             if (string.Compare(orderBy, "id", true) == 0)

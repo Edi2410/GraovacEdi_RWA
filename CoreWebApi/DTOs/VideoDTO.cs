@@ -20,5 +20,4 @@ public partial class VideoDTO
 
     public int? ImageId { get; set; }
 
-    public virtual ICollection<VideoTag> VideoTags { get; set; } = new List<VideoTag>();
 }

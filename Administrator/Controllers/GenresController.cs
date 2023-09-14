@@ -154,7 +154,7 @@ namespace Administrator.Controllers
             var hasDependentVideos = await _context.Videos.AnyAsync(v => v.GenreId == id);
             if (hasDependentVideos)
             {
-                return BadRequest("Cannot delete this genre because it is referenced by videos.");
+                return Json(new { success = false, message = "Cannot delete this genre because it is referenced by videos." });
             }
 
             var genre = await _context.Genres.FindAsync(id);

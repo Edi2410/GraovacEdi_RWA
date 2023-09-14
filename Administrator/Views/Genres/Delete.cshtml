@@ -46,10 +46,13 @@
                         if (data.success) {
                             window.location.href = '/Genres/Index';
                         } else {
+                            consoel.log("success")
+                            console.log(data.message)
                             alert(data.message);
                         }
                     },
                     error: function (error) {
+                        console.log(error)
                         alert(error.message);
                     }
                 });
